@@ -47,7 +47,7 @@ class GDExtension : public Resource {
 
 	void *library = nullptr; // pointer if valid,
 	String library_path;
-#if defined(WINDOWS_ENABLED) && defined(TOOLS_ENABLED)
+#if defined(TOOLS_ENABLED)
 	String temp_lib_path;
 #endif
 	bool reloadable = false;
@@ -123,7 +123,7 @@ public:
 	Error open_library(const String &p_path, const String &p_entry_symbol);
 	void close_library();
 
-#if defined(WINDOWS_ENABLED) && defined(TOOLS_ENABLED)
+#if defined(TOOLS_ENABLED)
 	String get_temp_library_path() const { return temp_lib_path; }
 #endif
 

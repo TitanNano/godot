@@ -666,10 +666,27 @@ Error OS_Unix::open_dynamic_library(const String p_path, void *&p_library_handle
 	return OK;
 }
 
+// this function is 101% pragmatic, don't @ me
+void print_mapping_count() {
+  const size_t buf_size = 1024;
+  char buf[buf_size];
+  printf("mapping count: ");
+  fflush(stdout);
+  snprintf(buf, buf_size, "bash -c 'lsof -a -p %d -d txt | grep libnative | wc -l'",
+           getpid());
+  system(buf);
+}
+
+
 Error OS_Unix::close_dynamic_library(void *p_library_handle) {
+	print_mapping_count();
+	
 	if (dlclose(p_library_handle)) {
 		return FAILED;
 	}
+
+	print_mapping_count();
+	
 	return OK;
 }
 

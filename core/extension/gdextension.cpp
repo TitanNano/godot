@@ -679,7 +679,7 @@ GDExtensionInterfaceFunctionPtr GDExtension::get_interface_function(StringName p
 
 Error GDExtension::open_library(const String &p_path, const String &p_entry_symbol) {
 	String abs_path = ProjectSettings::get_singleton()->globalize_path(p_path);
-#if defined(WINDOWS_ENABLED) && defined(TOOLS_ENABLED)
+#if defined(TOOLS_ENABLED)
 	// If running on the editor on Windows, we copy the library and open the copy.
 	// This is so the original file isn't locked and can be updated by a compiler.
 	bool library_copied = false;
@@ -691,7 +691,7 @@ Error GDExtension::open_library(const String &p_path, const String &p_entry_symb
 
 		// Copy the file to the same directory as the original with a prefix in the name.
 		// This is so relative path to dependencies are satisfied.
-		String copy_path = abs_path.get_base_dir().path_join("~" + abs_path.get_file());
+		String copy_path = abs_path.get_base_dir().path_join(FileAccess::get_md5(abs_path) + "_" + abs_path.get_file());
 
 		// If there's a left-over copy (possibly from a crash) then delete it first.
 		if (FileAccess::exists(copy_path)) {
@@ -720,7 +720,7 @@ Error GDExtension::open_library(const String &p_path, const String &p_entry_symb
 		return err;
 	}
 
-#if defined(WINDOWS_ENABLED) && defined(TOOLS_ENABLED)
+#if defined(TOOLS_ENABLED)
 	// If we copied the file, let's change the library path to point at the original,
 	// because that's what we want to check to see if it's changed.
 	if (library_copied) {
@@ -755,7 +755,7 @@ void GDExtension::close_library() {
 	ERR_FAIL_NULL(library);
 	OS::get_singleton()->close_dynamic_library(library);
 
-#if defined(TOOLS_ENABLED) && defined(WINDOWS_ENABLED)
+#if defined(TOOLS_ENABLED)
 	// Delete temporary copy of library if it exists.
 	if (!temp_lib_path.is_empty() && Engine::get_singleton()->is_editor_hint()) {
 		DirAccess::remove_absolute(temp_lib_path);
